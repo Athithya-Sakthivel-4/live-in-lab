@@ -1,0 +1,39 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Child Recovery Platform - India</title>
+    <link rel="stylesheet" href="{{ url_for('static', filename='style.css') }}">
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css">
+</head>
+<body>
+    <nav class="navbar navbar-dark bg-primary">
+        <div class="container">
+            <a class="navbar-brand" href="#">🇮🇳 Child Recovery Platform</a>
+        </div>
+    </nav>
+
+    <div class="container mt-5">
+        <h2 class="text-center">Find Missing Children</h2>
+        <p class="text-center">Upload an image to check for a match in our database.</p>
+
+        <div class="card p-4 shadow-sm mx-auto" style="max-width: 500px;">
+            <form action="/upload" method="post" enctype="multipart/form-data">
+                <div class="mb-3">
+                    <input type="file" class="form-control" name="file" id="fileInput" required>
+                </div>
+                <div class="text-center">
+                    <img id="preview" src="#" class="img-fluid rounded d-none" alt="Image Preview">
+                </div>
+                <button type="submit" class="btn btn-primary w-100 mt-3">Find Match</button>
+            </form>
+        </div>
+
+        <div id="result" class="alert alert-info mt-4 text-center d-none"></div>
+    </div>
+
+    <script src="{{ url_for('static', filename='scripts.js') }}"></script>
+    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js"></script>
+</body>
+</html>
