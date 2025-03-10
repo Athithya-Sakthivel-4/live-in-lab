@@ -5,8 +5,8 @@ PIP = venv/bin/pip
 # Define app entry point
 APP = app.py
 
-# System dependencies for OpenCV (libGL) and general utilities
-SYSTEM_DEPENDENCIES = libgl1-mesa-glx libglib2.0-0
+# System dependencies for OpenCV and general utilities
+SYSTEM_DEPENDENCIES = libgl1 libglib2.0-0 mesa-utils
 
 all: system-deps venv install-db run
 
