@@ -26,7 +26,6 @@ venv:
 # 3️⃣ Install Python dependencies
 install:
 	$(PIP) install --no-cache-dir -r requirements.txt
-	$(PIP) install tf-keras  # Fix DeepFace error
 
 # 4️⃣ Initialize database
 install-db: install
