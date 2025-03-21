@@ -1,39 +1,35 @@
+// ✅ Image Preview (Upload Page)
 document.addEventListener("DOMContentLoaded", function () {
-    const fileInput = document.getElementById("fileInput");
-    const preview = document.getElementById("preview");
-    const resultDiv = document.getElementById("result");
+    const imageInput = document.getElementById("imageUpload");
+    const previewImage = document.getElementById("previewImage");
 
-    fileInput.addEventListener("change", function () {
-        const file = fileInput.files[0];
-        if (file) {
-            const reader = new FileReader();
-            reader.onload = function (e) {
-                preview.src = e.target.result;
-                preview.classList.remove("d-none");
-            };
-            reader.readAsDataURL(file);
-        }
-    });
-
-    document.querySelector("form").addEventListener("submit", function (e) {
-        e.preventDefault();
-        resultDiv.textContent = "Processing...";
-        resultDiv.classList.remove("d-none");
-
-        const formData = new FormData(this);
-
-        fetch("/upload", {
-            method: "POST",
-            body: formData
-        })
-        .then(response => response.text())
-        .then(data => {
-            resultDiv.textContent = data;
-            resultDiv.classList.add("alert-success");
-        })
-        .catch(error => {
-            resultDiv.textContent = "Error processing image.";
-            resultDiv.classList.add("alert-danger");
+    if (imageInput) {
+        imageInput.addEventListener("change", function (event) {
+            const file = event.target.files[0];
+            if (file) {
+                const reader = new FileReader();
+                reader.onload = function (e) {
+                    previewImage.src = e.target.result;
+                    previewImage.classList.remove("d-none");
+                };
+                reader.readAsDataURL(file);
+            }
         });
-    });
+    }
+});
+
+// ✅ Live Search (Database Page)
+document.addEventListener("DOMContentLoaded", function () {
+    const searchInput = document.getElementById("searchInput");
+    const children = document.querySelectorAll(".child-card");
+
+    if (searchInput) {
+        searchInput.addEventListener("keyup", function () {
+            let filter = this.value.toLowerCase();
+            children.forEach(child => {
+                let name = child.querySelector(".card-title").innerText.toLowerCase();
+                child.style.display = name.includes(filter) ? "block" : "none";
+            });
+        });
+    }
 });

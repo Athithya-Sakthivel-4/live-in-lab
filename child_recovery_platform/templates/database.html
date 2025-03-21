@@ -1,0 +1,51 @@
+{% extends "base.html" %}
+
+{% block title %}Missing Children Database | Child Recovery Platform{% endblock %}
+
+{% block content %}
+<div class="container mt-5">
+    <h2 class="text-center">Missing Children Database</h2>
+    <p class="text-muted text-center">Below is a list of missing children stored in our system.</p>
+
+    <!-- ✅ Search Bar -->
+    <div class="row mb-4">
+        <div class="col-md-6 mx-auto">
+            <input type="text" id="searchInput" class="form-control" placeholder="Search by name...">
+        </div>
+    </div>
+
+    <!-- ✅ Children Display Grid -->
+    <div class="row" id="childrenGrid">
+        {% for child in children %}
+        <div class="col-md-4 mb-4 child-card">
+            <div class="card shadow-lg">
+                <img src="{{ url_for('static', filename='uploads/' + child.image) }}" class="card-img-top" alt="{{ child.name }}">
+                <div class="card-body text-center">
+                    <h5 class="card-title">{{ child.name }}</h5>
+                    <p class="card-text"><strong>Age:</strong> {{ child.age }}</p>
+                    <p class="card-text"><strong>Last Seen:</strong> {{ child.last_seen }}</p>
+                </div>
+            </div>
+        </div>
+        {% endfor %}
+    </div>
+</div>
+
+<!-- ✅ JavaScript for Search Filtering -->
+<script>
+    document.getElementById("searchInput").addEventListener("keyup", function() {
+        let filter = this.value.toLowerCase();
+        let children = document.querySelectorAll(".child-card");
+
+        children.forEach(child => {
+            let name = child.querySelector(".card-title").innerText.toLowerCase();
+            if (name.includes(filter)) {
+                child.style.display = "block";
+            } else {
+                child.style.display = "none";
+            }
+        });
+    });
+</script>
+
+{% endblock %}

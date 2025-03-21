@@ -1,4 +1,7 @@
-flask
-opencv-python
-deepface
-pillow
+fastapi
+uvicorn
+insightface
+opencv-python-headless
+numpy
+onnxruntime
+python-multipart
