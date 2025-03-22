@@ -1,41 +1,57 @@
-# Define Python environment
-PYTHON = venv/bin/python
-PIP = venv/bin/pip
+# Define Python environment paths
+PYTHON = .venv/bin/python
+PIP = .venv/bin/pip
+UVICORN = .venv/bin/uvicorn
 
 # Define app entry point
 APP = app.py
 
-# System dependencies for OpenCV and general utilities
+# System dependencies (Linux & macOS)
 SYSTEM_DEPENDENCIES = libgl1 libglib2.0-0 mesa-utils
+MAC_DEPENDENCIES = opencv
 
+# 1️⃣ Run everything in one step
 all: system-deps venv install-db run
 
-# 1️⃣ Install system dependencies (for OpenCV and GUI support)
+# 2️⃣ Install system dependencies automatically
 system-deps:
-	sudo apt-get update && sudo apt-get install -y $(SYSTEM_DEPENDENCIES)
-	sudo apt-get install -y python3.11 python3.11-venv python3.11-dev
-	python3.11 -m pip install --upgrade pip setuptools wheel
+	@echo "🔍 Detecting OS..."
+	@if [ -f "/etc/debian_version" ]; then \
+		echo "📦 Installing system dependencies for Debian-based OS"; \
+		sudo apt-get update && sudo apt-get install -y $(SYSTEM_DEPENDENCIES); \
+	elif [ "$$(uname)" = "Darwin" ]; then \
+		echo "🍏 Installing dependencies for macOS"; \
+		brew install $(MAC_DEPENDENCIES); \
+	else \
+		echo "⚠️ Unsupported OS. Please install dependencies manually."; \
+		exit 1; \
+	fi
 
-# 2️⃣ Set up a fresh virtual environment
+# 3️⃣ Set up virtual environment
 venv:
-	rm -rf venv  # Ensure a fresh environment
-	python3.11 -m venv venv
-	$(PIP) install --upgrade pip
-	pip3 cache purge
+	@echo "🛠️ Setting up virtual environment..."
+	rm -rf .venv  # Ensure fresh environment
+	python3 -m venv .venv
+	. .venv/bin/activate && $(PIP) install --upgrade pip setuptools wheel
 
-# 3️⃣ Install Python dependencies
+
+# 4️⃣ Install Python dependencies
 install:
+	@echo "📦 Installing Python dependencies..."
 	$(PIP) install --no-cache-dir -r requirements.txt
+	$(PIP) cache purge  # Clean cache
 
-# 4️⃣ Initialize database
+# 5️⃣ Initialize database (after installing dependencies)
 install-db: install
+	@echo "🗂️ Setting up database..."
 	$(PYTHON) database.py
 
-# 5️⃣ Run the application
+# 6️⃣ Run the FastAPI application with Uvicorn
 run:
-	$(PYTHON) $(APP)
+	@echo "🚀 Starting FastAPI server..."
+	$(UVICORN) app:app --host 0.0.0.0 --port 8000 --reload
 
-# 6️⃣ Clean up environment
+# 7️⃣ Clean up the environment
 clean:
-	rm -rf venv __pycache__ *.pyc *.pyo
-	rm -f children.db
+	@echo "🧹 Cleaning up environment..."
+	rm -rf .venv __pycache__ *.pyc *.pyo children.db

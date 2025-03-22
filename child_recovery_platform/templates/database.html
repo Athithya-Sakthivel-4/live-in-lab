@@ -39,11 +39,7 @@
 
         children.forEach(child => {
             let name = child.querySelector(".card-title").innerText.toLowerCase();
-            if (name.includes(filter)) {
-                child.style.display = "block";
-            } else {
-                child.style.display = "none";
-            }
+            child.style.display = name.includes(filter) ? "block" : "none";
         });
     });
 </script>

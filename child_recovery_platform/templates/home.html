@@ -3,94 +3,52 @@
 {% block title %}Home | Child Recovery Platform{% endblock %}
 
 {% block content %}
-<!-- ✅ Hero Section -->
-<section class="hero-section text-center text-white">
-    <div class="container py-5">
-        <h1 class="display-4">AI-Powered Child Recovery</h1>
-        <p class="lead">Helping reunite missing children with their families using facial recognition.</p>
-        <a href="{{ url_for('upload') }}" class="btn btn-primary btn-lg mx-2"><i class="fas fa-upload"></i> Upload Image</a>
-        <a href="{{ url_for('search') }}" class="btn btn-warning btn-lg mx-2"><i class="fas fa-search"></i> Search for a Child</a>
+<div class="container mt-5">
+    <div class="text-center">
+        <h1 class="text-primary">Child Recovery Platform</h1>
+        <p class="text-muted">Helping families reunite with missing children through AI-driven search.</p>
     </div>
-</section>
 
-<!-- ✅ About Section -->
-<section class="about-section py-5">
-    <div class="container">
-        <div class="row align-items-center">
-            <div class="col-md-6">
-                <img src="{{ url_for('static', filename='images/banner.jpg') }}" class="img-fluid rounded shadow" alt="Child Recovery">
+    <!-- ✅ Main Sections -->
+    <div class="row mt-4">
+        <!-- Upload Section -->
+        <div class="col-md-4 text-center">
+            <div class="card shadow-lg">
+                <div class="card-body">
+                    <h5 class="card-title"><i class="fas fa-upload"></i> Upload Image</h5>
+                    <p class="card-text">Upload a photo to check against our database.</p>
+                    <a href="{{ url_for('upload') }}" class="btn btn-primary">Upload & Search</a>
+                </div>
             </div>
-            <div class="col-md-6">
-                <h2>About This Platform</h2>
-                <p class="text-muted">
-                    The Child Recovery Platform is an AI-driven system designed to assist in finding missing children. 
-                    Using deep learning and facial recognition, our platform helps law enforcement and families reconnect with lost loved ones.
-                </p>
-                <a href="{{ url_for('database') }}" class="btn btn-outline-dark"><i class="fas fa-database"></i> View Missing Children</a>
+        </div>
+
+        <!-- Database Section -->
+        <div class="col-md-4 text-center">
+            <div class="card shadow-lg">
+                <div class="card-body">
+                    <h5 class="card-title"><i class="fas fa-database"></i> View Database</h5>
+                    <p class="card-text">Explore our database of missing children.</p>
+                    <a href="{{ url_for('database') }}" class="btn btn-secondary">View Database</a>
+                </div>
+            </div>
+        </div>
+
+        <!-- Learn More Section -->
+        <div class="col-md-4 text-center">
+            <div class="card shadow-lg">
+                <div class="card-body">
+                    <h5 class="card-title"><i class="fas fa-info-circle"></i> Learn More</h5>
+                    <p class="card-text">Find out how our platform helps reunite families.</p>
+                    <a href="{{ url_for('about') }}" class="btn btn-info">Learn More</a>
+                </div>
             </div>
         </div>
     </div>
-</section>
 
-<!-- ✅ How It Works Section -->
-<section class="how-it-works py-5 bg-light">
-    <div class="container text-center">
-        <h2 class="mb-4">How It Works</h2>
-        <div class="row">
-            <div class="col-md-4">
-                <i class="fas fa-camera-retro fa-3x text-primary"></i>
-                <h4 class="mt-3">1. Upload an Image</h4>
-                <p>Submit a photo of a missing child for verification.</p>
-            </div>
-            <div class="col-md-4">
-                <i class="fas fa-brain fa-3x text-success"></i>
-                <h4 class="mt-3">2. AI Face Recognition</h4>
-                <p>Our AI-powered system analyzes and compares the face.</p>
-            </div>
-            <div class="col-md-4">
-                <i class="fas fa-child fa-3x text-danger"></i>
-                <h4 class="mt-3">3. Find a Match</h4>
-                <p>Check if a match is found in our database.</p>
-            </div>
-        </div>
+    <!-- ✅ Call to Action -->
+    <div class="mt-5 text-center">
+        <h3>Every Child Matters</h3>
+        <p>If you recognize a child, report it to the authorities immediately.</p>
     </div>
-</section>
-
-<!-- ✅ Testimonials Section -->
-<section class="testimonials py-5">
-    <div class="container text-center">
-        <h2 class="mb-4">What People Say</h2>
-        <div class="row">
-            <div class="col-md-4">
-                <blockquote class="blockquote">
-                    <p>"This platform changed our lives! We found our missing child in just two days."</p>
-                    <footer class="blockquote-footer">A Grateful Parent</footer>
-                </blockquote>
-            </div>
-            <div class="col-md-4">
-                <blockquote class="blockquote">
-                    <p>"An incredible use of AI for social good. Highly recommended!"</p>
-                    <footer class="blockquote-footer">NGO Representative</footer>
-                </blockquote>
-            </div>
-            <div class="col-md-4">
-                <blockquote class="blockquote">
-                    <p>"A game-changer in child recovery efforts worldwide."</p>
-                    <footer class="blockquote-footer">Law Enforcement Officer</footer>
-                </blockquote>
-            </div>
-        </div>
-    </div>
-</section>
-
-<!-- ✅ Call to Action -->
-<section class="cta-section text-center text-white py-4">
-    <div class="container">
-        <h2>Take Action Now</h2>
-        <p>Upload an image or search for a missing child today.</p>
-        <a href="{{ url_for('upload') }}" class="btn btn-primary btn-lg"><i class="fas fa-upload"></i> Upload Now</a>
-        <a href="{{ url_for('search') }}" class="btn btn-warning btn-lg"><i class="fas fa-search"></i> Start Search</a>
-    </div>
-</section>
-
+</div>
 {% endblock %}
