@@ -1,33 +1,76 @@
 {% extends "base.html" %}
 
-{% block title %}Search Results | Child Recovery Platform{% endblock %}
+{% block title %}Search | Child Recovery Platform{% endblock %}
 
 {% block content %}
-<div class="container mt-5 text-center">
-    <h2>Search Results</h2>
-    <p class="text-muted">Here are the results of the facial recognition search.</p>
+<div class="container mt-5">
+    <h2 class="text-center">Search for a Missing Child</h2>
+    <p class="text-muted text-center">Upload a photo to compare with our database.</p>
 
-    {% if match %}
-    <!-- ✅ Match Found -->
-    <div class="card shadow-lg mx-auto" style="max-width: 400px;">
-        <img src="{{ url_for('static', filename='uploads/' + match.image) }}" class="card-img-top" alt="{{ match.name }}">
-        <div class="card-body">
-            <h5 class="card-title">{{ match.name }}</h5>
-            <p class="card-text"><strong>Age:</strong> {{ match.age }}</p>
-            <p class="card-text"><strong>Last Seen:</strong> {{ match.last_seen }}</p>
-            <p class="text-success"><i class="fas fa-check-circle"></i> Match Confidence: {{ confidence }}%</p>
+    <form id="searchForm" class="search-form shadow-lg p-4 rounded">
+        <div class="mb-3">
+            <label for="searchImageUpload" class="form-label"><strong>Upload Image</strong></label>
+            <input type="file" class="form-control" id="searchImageUpload" name="file" accept="image/*" required>
         </div>
-    </div>
 
-    <a href="{{ url_for('database') }}" class="btn btn-primary mt-3"><i class="fas fa-database"></i> View Full Database</a>
+        <div class="text-center mb-3">
+            <img id="searchPreviewImage" src="{{ request.app.url_path_for('static', path='images/placeholder.jpg') }}" 
+                 class="img-thumbnail d-none" alt="Image Preview" style="max-width: 300px;">
+        </div>
 
-    {% else %}
-    <!-- ❌ No Match Found -->
-    <div class="alert alert-danger mt-4">
-        <i class="fas fa-exclamation-triangle"></i> No match found in the database.
-    </div>
+        <button type="submit" class="btn btn-primary w-100"><i class="fas fa-search"></i> Search</button>
+    </form>
 
-    <a href="{{ url_for('upload') }}" class="btn btn-warning"><i class="fas fa-arrow-left"></i> Try Another Image</a>
-    {% endif %}
+    <div id="searchResult" class="alert mt-3 d-none"></div>
 </div>
+
+<script>
+    document.getElementById("searchImageUpload").addEventListener("change", function(event) {
+        const file = event.target.files[0];
+        if (file) {
+            const reader = new FileReader();
+            reader.onload = function(e) {
+                document.getElementById("searchPreviewImage").src = e.target.result;
+                document.getElementById("searchPreviewImage").classList.remove("d-none");
+            };
+            reader.readAsDataURL(file);
+        }
+    });
+
+    document.getElementById("searchForm").addEventListener("submit", async function(event) {
+        event.preventDefault();
+
+        const fileInput = document.getElementById("searchImageUpload");
+        if (fileInput.files.length === 0) {
+            alert("Please select a file to search.");
+            return;
+        }
+
+        let formData = new FormData();
+        formData.append("file", fileInput.files[0]);
+
+        try {
+            const response = await fetch("{{ request.app.url_path_for('search_child') }}", {
+                method: "POST",
+                body: formData
+            });
+
+            const result = await response.json();
+            const resultBox = document.getElementById("searchResult");
+
+            if (result.status === "Match Found") {
+                resultBox.className = "alert alert-success mt-3";
+                resultBox.innerHTML = `<strong>Match Found:</strong> ${result.child}`;
+            } else {
+                resultBox.className = "alert alert-warning mt-3";
+                resultBox.innerHTML = `<strong>No Match Found.</strong>`;
+            }
+
+            resultBox.classList.remove("d-none");
+        } catch (error) {
+            console.error("Search failed:", error);
+            alert("An error occurred while searching.");
+        }
+    });
+</script>
 {% endblock %}

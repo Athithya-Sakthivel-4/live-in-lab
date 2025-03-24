@@ -7,24 +7,23 @@
     <h2 class="text-center">Upload an Image for Search</h2>
     <p class="text-muted text-center">Upload a photo of a child to check against our database.</p>
 
-    <!-- ✅ Upload Form -->
-    <form action="{{ url_for('upload') }}" method="POST" enctype="multipart/form-data" class="upload-form shadow-lg p-4 rounded">
+    <form id="uploadForm" class="upload-form shadow-lg p-4 rounded">
         <div class="mb-3">
             <label for="imageUpload" class="form-label"><strong>Select an Image</strong></label>
-            <input type="file" class="form-control" id="imageUpload" name="image" accept="image/*" required>
+            <input type="file" class="form-control" id="imageUpload" name="file" accept="image/*" required>
         </div>
 
-        <!-- ✅ Image Preview -->
         <div class="text-center mb-3">
-            <img id="previewImage" src="{{ url_for('static', filename='images/placeholder.jpg') }}" 
+            <img id="previewImage" src="{{ request.app.url_path_for('static', path='images/placeholder.jpg') }}" 
                  class="img-thumbnail d-none" alt="Image Preview" style="max-width: 300px;">
         </div>
 
         <button type="submit" class="btn btn-primary w-100"><i class="fas fa-upload"></i> Upload & Search</button>
     </form>
+
+    <div id="uploadMessage" class="alert mt-3 d-none"></div>
 </div>
 
-<!-- ✅ JavaScript for Image Preview -->
 <script>
     document.getElementById("imageUpload").addEventListener("change", function(event) {
         const file = event.target.files[0];
@@ -37,6 +36,41 @@
             reader.readAsDataURL(file);
         }
     });
-</script>
 
+    document.getElementById("uploadForm").addEventListener("submit", async function(event) {
+        event.preventDefault();
+
+        const fileInput = document.getElementById("imageUpload");
+        if (fileInput.files.length === 0) {
+            alert("Please select a file to upload.");
+            return;
+        }
+
+        let formData = new FormData();
+        formData.append("file", fileInput.files[0]);
+
+        try {
+            const response = await fetch("{{ request.app.url_path_for('upload') }}", {
+                method: "POST",
+                body: formData
+            });
+
+            const result = await response.json();
+            const messageBox = document.getElementById("uploadMessage");
+
+            if (response.ok) {
+                messageBox.className = "alert alert-success mt-3";
+                messageBox.innerHTML = `<strong>Success!</strong> ${result.message}`;
+            } else {
+                messageBox.className = "alert alert-danger mt-3";
+                messageBox.innerHTML = `<strong>Error!</strong> ${result.detail}`;
+            }
+
+            messageBox.classList.remove("d-none");
+        } catch (error) {
+            console.error("Upload failed:", error);
+            alert("An error occurred while uploading the file.");
+        }
+    });
+</script>
 {% endblock %}

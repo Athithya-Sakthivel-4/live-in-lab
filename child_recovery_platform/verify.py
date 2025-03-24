@@ -1,34 +1,60 @@
 import sqlite3
 import cv2
-from deepface import DeepFace
+import numpy as np
+
+DB_PATH = "children.db"
 
 def find_match(image_path):
-    # Connect to the database
-    conn = sqlite3.connect('children.db')
+    # Load uploaded image
+    uploaded_image = cv2.imread(image_path, cv2.IMREAD_GRAYSCALE)
+    
+    if uploaded_image is None:
+        print("❌ Could not load uploaded image")
+        return None
+
+    # Connect to database
+    conn = sqlite3.connect(DB_PATH)
     c = conn.cursor()
 
     # Fetch all stored images
     c.execute("SELECT id, name, image_path FROM missing_children")
     children = c.fetchall()
     
+    sift = cv2.SIFT_create()
+    uploaded_kp, uploaded_des = sift.detectAndCompute(uploaded_image, None)
+
+    if uploaded_des is None:
+        print("❌ No keypoints found in the uploaded image")
+        conn.close()
+        return None
+
+    bf = cv2.BFMatcher()
+
     for child in children:
         db_image_path = child[2]
-        
-        try:
-            # Perform face recognition
-            result = DeepFace.verify(image_path, db_image_path, enforce_detection=False)
-            
-            if result["verified"]:
-                print(f"✅ Match found: {child[1]}")
-                conn.close()
-                return child[1]
-        except Exception as e:
-            print(f"Error processing image {db_image_path}: {e}")
-    
-    conn.close()
-    print("❌ No match found.")
-    return None
+        db_image = cv2.imread(db_image_path, cv2.IMREAD_GRAYSCALE)
 
-# Run verification with an unknown child image
-unknown_image = "database_images/unknown_child.png"  # Replace with the actual path
-find_match(unknown_image)
+        if db_image is None:
+            continue
+
+        db_kp, db_des = sift.detectAndCompute(db_image, None)
+
+        if db_des is None:
+            continue
+
+        # Match keypoints
+        matches = bf.knnMatch(uploaded_des, db_des, k=2)
+        
+        # Apply Lowe’s ratio test
+        good_matches = []
+        for m, n in matches:
+            if m.distance < 0.75 * n.distance:
+                good_matches.append(m)
+
+        # If enough good matches are found, we consider it a match
+        if len(good_matches) > 10:
+            conn.close()
+            return child[1]
+
+    conn.close()
+    return None
