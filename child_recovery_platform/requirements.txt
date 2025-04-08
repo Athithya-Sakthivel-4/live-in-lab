@@ -10,3 +10,4 @@ keras
 aiofiles
 python-multipart
 opencv-python-headless
+jinja2
